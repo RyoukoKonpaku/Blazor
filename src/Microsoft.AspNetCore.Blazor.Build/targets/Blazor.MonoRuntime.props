@@ -6,23 +6,22 @@
     <MonoBaseClassLibraryFacadesPath>$(BlazorMonoRuntimeBasePath)tools/mono/bcl/Facades/</MonoBaseClassLibraryFacadesPath>
     <MonoAsmjsRuntimePath>$(BlazorMonoRuntimeBasePath)tools/mono/asmjs/</MonoAsmjsRuntimePath>
     <MonoWasmRuntimePath>$(BlazorMonoRuntimeBasePath)tools/mono/wasm/</MonoWasmRuntimePath>
-    <BlazorJsPath>$(BlazorMonoRuntimeBasePath)tools/blazor/blazor.js</BlazorJsPath>
+    <BlazorJsPath>$(BlazorMonoRuntimeBasePath)tools/blazor/</BlazorJsPath>
   </PropertyGroup>
-
+  
   <PropertyGroup Label="Blazor build outputs">
     <AdditionalMonoLinkerOptions>-c link -u link -t --verbose </AdditionalMonoLinkerOptions>
-    <BaseBlazorPackageContentOutputPath>dist/_content/</BaseBlazorPackageContentOutputPath>
     <BaseBlazorRuntimeOutputPath>dist/_framework/</BaseBlazorRuntimeOutputPath>
     <BaseBlazorRuntimeBinOutputPath>$(BaseBlazorRuntimeOutputPath)_bin/</BaseBlazorRuntimeBinOutputPath>
     <BaseBlazorRuntimeAsmjsOutputPath>$(BaseBlazorRuntimeOutputPath)asmjs/</BaseBlazorRuntimeAsmjsOutputPath>
     <BaseBlazorRuntimeWasmOutputPath>$(BaseBlazorRuntimeOutputPath)wasm/</BaseBlazorRuntimeWasmOutputPath>
     <BaseBlazorJsOutputPath>$(BaseBlazorRuntimeOutputPath)</BaseBlazorJsOutputPath>
     <BaseBlazorIntermediateOutputPath>blazor/</BaseBlazorIntermediateOutputPath>
+    <BlazorLinkOnBuild Condition="'$(BlazorLinkOnBuild)' == ''">false</BlazorLinkOnBuild>
     <BlazorWebRootName>wwwroot/</BlazorWebRootName>
     <BlazorIndexHtmlName>Index.html</BlazorIndexHtmlName>
-    <BlazorOutputIndexHtmlName>$(BlazorIndexHtmlName.ToLowerInvariant())</BlazorOutputIndexHtmlName>
   </PropertyGroup>
-
+  
   <ItemGroup>
     <MonoBCLFile Include="$(MonoBaseClassLibraryPath)*.dll" />
     <MonoBCLFacadeFile Include="$(MonoBaseClassLibraryFacadesPath)*.dll" />

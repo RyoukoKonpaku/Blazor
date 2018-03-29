@@ -8,37 +8,40 @@
 
   <ItemGroup>
     <AsmJsItemsToCopy Include="$(MonoUnoptimizedDir)asmjs\**" />
+    <AsmJsItemsOutput Include="@(AsmJsItemsToCopy->'$(MonoOptimizedDir)asmjs/%(RecursiveDir)')" />
     <WasmItemsToCopy Include="$(MonoUnoptimizedDir)wasm\**" />
+    <WasmItemsOutput Include="@(WasmItemsToCopy->'$(MonoOptimizedDir)wasm/%(RecursiveDir)')" />
     <BclItemsToCopy Include="$(MonoIncomingDir)bcl\**" />
+    <BclItemsOutput Include="@(BclItemsToCopy->'$(MonoOptimizedDir)bcl/%(RecursiveDir)')" />
   </ItemGroup>
 
   <Target Name="OptimizeMono" DependsOnTargets="OptimizeMonoWasm; OptimizeMonoAsmJs; OptimizeBcl" />
 
   <Target Name="OptimizeMonoWasm"
           Inputs="@(WasmItemsToCopy)"
-          Outputs="@(WasmItemsToCopy->'$(MonoOptimizedDir)wasm\%(RecursiveDir)%(FileName)%(Extension)')">
+          Outputs="@(WasmItemsOutput)">
     <!-- TODO: Implement WASM code stripping like in prototype -->
     <Message Importance="High" Text="Creating optimized Mono WebAssembly build" />
     <Copy SourceFiles="@(WasmItemsToCopy)"
-          DestinationFiles="@(WasmItemsToCopy->'$(MonoOptimizedDir)wasm\%(RecursiveDir)%(FileName)%(Extension)')" />
+          DestinationFolder="$(MonoOptimizedDir)wasm\%(RecursiveDir)" />
   </Target>
 
   <Target Name="OptimizeMonoAsmJs"
           Inputs="@(AsmJsItemsToCopy)"
-          Outputs="@(AsmJsItemsToCopy->'$(MonoOptimizedDir)asmjs\%(RecursiveDir)%(FileName)%(Extension)')">
+          Outputs="@(AsmJsItemsOutput)">
     <!-- TODO: Implement asm.js stripping like in prototype -->
     <Message Importance="High" Text="Creating optimized Mono asm.js build" />
     <Copy SourceFiles="@(AsmJsItemsToCopy)"
-          DestinationFiles="@(AsmJsItemsToCopy->'$(MonoOptimizedDir)asmjs\%(RecursiveDir)%(FileName)%(Extension)')" />
+          DestinationFolder="$(MonoOptimizedDir)asmjs\%(RecursiveDir)" />
   </Target>
 
   <Target Name="OptimizeBcl"
           Inputs="@(BclItemsToCopy)"
-          Outputs="@(BclItemsToCopy->'$(MonoOptimizedDir)bcl\%(RecursiveDir)%(FileName)%(Extension)')">
+          Outputs="@(BclItemsOutput)">
     <!-- TODO: Implement IL stripping like in prototype -->
     <Message Importance="High" Text="Creating optimized BCL build" />
     <Copy SourceFiles="@(BclItemsToCopy)"
-          DestinationFiles="@(BclItemsToCopy->'$(MonoOptimizedDir)bcl\%(RecursiveDir)%(FileName)%(Extension)')" />
+          DestinationFolder="$(MonoOptimizedDir)bcl\%(RecursiveDir)" />
   </Target>
 
   <Target Name="BuildMonoEmcc">

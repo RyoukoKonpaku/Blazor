@@ -13,55 +13,15 @@ using Mono.Cecil;
 
 namespace Microsoft.AspNetCore.Blazor.Build
 {
-    internal class IndexHtmlWriter
+    public class IndexHtmlWriter
     {
-        public static void UpdateIndex(
-            string path,
-            string assemblyPath,
-            IEnumerable<string> assemblyReferences,
-            IEnumerable<string> jsReferences,
-            IEnumerable<string> cssReferences,
-            bool linkerEnabled,
-            string outputPath)
+        public static void UpdateIndex(string path, string assemblyPath, IEnumerable<string> references, string outputPath)
         {
-            var template = GetTemplate(path);
-            if (template == null)
-            {
-                return;
-            }
+            var template = File.ReadAllText(path);
             var assemblyName = Path.GetFileNameWithoutExtension(assemblyPath);
             var entryPoint = GetAssemblyEntryPoint(assemblyPath);
-            var updatedContent = GetIndexHtmlContents(template, assemblyName, entryPoint, assemblyReferences, jsReferences, cssReferences, linkerEnabled);
-            var normalizedOutputPath = Normalize(outputPath);
-            Console.WriteLine("Writing index to: " + normalizedOutputPath);
-            File.WriteAllText(normalizedOutputPath, updatedContent);
-        }
-
-        private static string Normalize(string outputPath) =>
-            Path.Combine(Path.GetDirectoryName(outputPath), Path.GetFileName(outputPath).ToLowerInvariant());
-
-        private static string GetTemplate(string path)
-        {
-            var fileName = Path.GetFileName(path);
-            if (File.Exists(path))
-            {
-                return File.ReadAllText(path);
-            }
-
-            if (Directory.Exists(Path.GetDirectoryName(path)))
-            {
-                var files = Directory.EnumerateFiles(Path.GetDirectoryName(path))
-                    .OrderBy(f => f);
-                foreach (var file in files)
-                {
-                    if (string.Equals(fileName, Path.GetFileName(file), StringComparison.OrdinalIgnoreCase))
-                    {
-                        return File.ReadAllText(file);
-                    }
-                }
-            }
-
-            return null;
+            var updatedContent = GetIndexHtmlContents(template, assemblyName, entryPoint, references);
+            File.WriteAllText(outputPath, updatedContent);
         }
 
         private static string GetAssemblyEntryPoint(string assemblyPath)
@@ -100,10 +60,7 @@ namespace Microsoft.AspNetCore.Blazor.Build
             string htmlTemplate,
             string assemblyName,
             string assemblyEntryPoint,
-            IEnumerable<string> assemblyReferences,
-            IEnumerable<string> jsReferences,
-            IEnumerable<string> cssReferences,
-            bool linkerEnabled)
+            IEnumerable<string> binFiles)
         {
             var resultBuilder = new StringBuilder();
 
@@ -142,19 +99,8 @@ namespace Microsoft.AspNetCore.Blazor.Build
                                     resultBuilder,
                                     assemblyName,
                                     assemblyEntryPoint,
-                                    assemblyReferences,
-                                    linkerEnabled,
+                                    binFiles,
                                     tag.Attributes);
-
-                                // Emit tags to reference any specified JS/CSS files
-                                AppendReferenceTags(
-                                    resultBuilder,
-                                    cssReferences,
-                                    "<link rel=\"stylesheet\" href=\"{0}\" />");
-                                AppendReferenceTags(
-                                    resultBuilder,
-                                    jsReferences,
-                                    "<script src=\"{0}\" defer></script>");
 
                                 // Set a flag so we know not to emit anything else until the special
                                 // tag is closed
@@ -181,15 +127,6 @@ namespace Microsoft.AspNetCore.Blazor.Build
             }
         }
 
-        private static void AppendReferenceTags(StringBuilder resultBuilder, IEnumerable<string> urls, string format)
-        {
-            foreach (var url in urls)
-            {
-                resultBuilder.AppendLine();
-                resultBuilder.AppendFormat(format, url);
-            }
-        }
-
         private static bool IsBlazorBootTag(HtmlTagToken tag)
             => string.Equals(tag.Name, "script", StringComparison.Ordinal)
             && tag.Attributes.Any(pair =>
@@ -201,7 +138,6 @@ namespace Microsoft.AspNetCore.Blazor.Build
             string assemblyName,
             string assemblyEntryPoint,
             IEnumerable<string> binFiles,
-            bool linkerEnabled,
             List<KeyValuePair<string, string>> attributes)
         {
             var assemblyNameWithExtension = $"{assemblyName}.dll";
@@ -214,15 +150,6 @@ namespace Microsoft.AspNetCore.Blazor.Build
             attributesDict["main"] = assemblyNameWithExtension;
             attributesDict["entrypoint"] = assemblyEntryPoint;
             attributesDict["references"] = referencesAttribute;
-
-            if (linkerEnabled)
-            {
-                attributesDict["linker-enabled"] = "true";
-            }
-            else
-            {
-                attributesDict.Remove("linker-enabled");
-            }
 
             resultBuilder.Append("<script");
             foreach (var attributePair in attributesDict)

@@ -2,6 +2,9 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Generic;
+using System.Text;
+using Microsoft.AspNetCore.Blazor.Build.Core;
 using Microsoft.Extensions.CommandLineUtils;
 
 namespace Microsoft.AspNetCore.Blazor.Build.Cli.Commands
@@ -11,15 +14,20 @@ namespace Microsoft.AspNetCore.Blazor.Build.Cli.Commands
         public static void Command(CommandLineApplication command)
         {
             var references = command.Option("--reference",
-                "Full path to a referenced assembly file",
+                "Full path to the application dependencies that are not part of netstandard2.0",
                 CommandOptionType.MultipleValue);
 
             var baseClassLibrary = command.Option("--base-class-library",
-                "Full path to a directory in which BCL assemblies can be found",
+                "Full path to the directories with the dlls that make up the mono BCL",
+                CommandOptionType.MultipleValue);
+
+            var resolutionOverrides = command.Option(
+                "--resolution-override",
+                "Semi-colon separated value pair of assembly name, path",
                 CommandOptionType.MultipleValue);
 
             var outputPath = command.Option("--output",
-                "Path to the output file that will contain the list with the full paths of the resolved assemblies",
+                "Path to the output file that will contain the selected assemblies",
                 CommandOptionType.SingleValue);
 
             var mainAssemblyPath = command.Argument("assembly",
@@ -40,6 +48,7 @@ namespace Microsoft.AspNetCore.Blazor.Build.Cli.Commands
                         mainAssemblyPath.Value,
                         references.Values.ToArray(),
                         baseClassLibrary.Values.ToArray(),
+                        resolutionOverrides.Values.ToArray(),
                         outputPath.Value());
 
                     return 0;

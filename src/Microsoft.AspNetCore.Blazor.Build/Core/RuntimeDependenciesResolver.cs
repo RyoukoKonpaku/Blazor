@@ -7,24 +7,16 @@ using System.IO;
 using System.Linq;
 using Mono.Cecil;
 
-namespace Microsoft.AspNetCore.Blazor.Build
+namespace Microsoft.AspNetCore.Blazor.Build.Core
 {
-    internal class RuntimeDependenciesResolver
+    class RuntimeDependenciesResolver
     {
         public static void ResolveRuntimeDependencies(
             string entryPoint,
             string[] applicationDependencies,
             string[] monoBclDirectories,
+            string[] resolutionOverrides,
             string outputFile)
-        {
-            var paths = ResolveRuntimeDependenciesCore(entryPoint, applicationDependencies, monoBclDirectories);
-            File.WriteAllLines(outputFile, paths);
-        }
-
-        public static IEnumerable<string> ResolveRuntimeDependenciesCore(
-            string entryPoint,
-            string[] applicationDependencies,
-            string[] monoBclDirectories)
         {
             var assembly = new AssemblyEntry(entryPoint, AssemblyDefinition.ReadAssembly(entryPoint));
 
@@ -45,7 +37,7 @@ namespace Microsoft.AspNetCore.Blazor.Build
             assemblyResolutionContext.ResolveAssemblies();
 
             var paths = assemblyResolutionContext.Results.Select(r => r.Path);
-            return paths;
+            File.WriteAllLines(outputFile, paths);
         }
 
         public class AssemblyResolutionContext
