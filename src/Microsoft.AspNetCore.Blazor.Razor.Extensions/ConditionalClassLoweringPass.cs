@@ -30,9 +30,10 @@ namespace Microsoft.AspNetCore.Blazor.Razor
 
                 // Determine if the element has a class attribute already.
                 int? classIndex = null;
+                var updateClassIndex = false;
                 for (var j = node.Children.Count - 1; j >= 0; j--)
                 {
-                    if (classIndex == null)
+                    if (updateClassIndex)
                     {
                         for (var c = node.Children.Count - 1; c >= 0; c--)
                         {
@@ -48,6 +49,7 @@ namespace Microsoft.AspNetCore.Blazor.Razor
                                 // If class is found bail out of the loop as there should be
                                 // only one class attribute per element.
                                 classIndex = c;
+                                updateClassIndex = false;
                                 break;
                             }
                         }
@@ -59,6 +61,7 @@ namespace Microsoft.AspNetCore.Blazor.Razor
                         attributeNode.AttributeName.StartsWith("class."))
                     {
                         RewriteUsage(node, j, attributeNode, classIndex);
+                        updateClassIndex = true;
                     }
                 }
             }
