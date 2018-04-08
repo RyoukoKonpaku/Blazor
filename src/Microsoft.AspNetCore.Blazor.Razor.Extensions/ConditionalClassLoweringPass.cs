@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Microsoft.AspNetCore.Blazor.Razor
 {
-    internal class ClassNameLoweringPass : IntermediateNodePassBase, IRazorOptimizationPass
+    internal class ConditionalClassLoweringPass : IntermediateNodePassBase, IRazorOptimizationPass
     {
         // Run after event handler pass
         public override int Order => base.Order + 50;
@@ -28,32 +28,34 @@ namespace Microsoft.AspNetCore.Blazor.Razor
             {
                 var node = nodes[i];
 
-                // Find if the node has a class attribute already.
+                // Determine if the element has a class attribute already.
                 int? classIndex = null;
-
                 for (var j = node.Children.Count - 1; j >= 0; j--)
                 {
                     if (classIndex == null)
                     {
                         for (var c = node.Children.Count - 1; c >= 0; c--)
                         {
+                            // The HtmlAttributeNode of the original class attribute would be converted to
+                            // a ComponentAttributeExtensionNode after the usage is already rerwitten once
+                            // so we should check for both cases.
+                            // There might be a better way of handling this though.
                             if ((node.Children[c] is TagHelperHtmlAttributeIntermediateNode classNode0 &&
                                 classNode0.AttributeName.Equals("class")) ||
                                 (node.Children[c] is ComponentAttributeExtensionNode classNode1 &&
                                 classNode1.AttributeName.Equals("class")))
                             {
                                 // If class is found bail out of the loop as there should be
-                                // only one class per element.
+                                // only one class attribute per element.
                                 classIndex = c;
                                 break;
                             }
                         }
                     }
 
-                    var attributeNode = node.Children[j] as ComponentAttributeExtensionNode;
-                    if (attributeNode != null &&
+                    if (node.Children[j] is ComponentAttributeExtensionNode attributeNode &&
                         attributeNode.TagHelper != null &&
-                        attributeNode.TagHelper.IsClassNameTagHelper() &&
+                        attributeNode.TagHelper.IsConditionalClassTagHelper() &&
                         attributeNode.AttributeName.StartsWith("class."))
                     {
                         RewriteUsage(node, j, attributeNode, classIndex);
@@ -64,25 +66,12 @@ namespace Microsoft.AspNetCore.Blazor.Razor
 
         private void RewriteUsage(TagHelperIntermediateNode node, int index, ComponentAttributeExtensionNode attributeNode, int? htmlClassIndex)
         {
-            // Bind works similarly to a macro, it always expands to code that the user could have written.
-            //
-            // For the nodes that are related to the bind-attribute rewrite them to look like a pair of
-            // 'normal' HTML attributes similar to the following transformation.
-            //
-            // Input:   <MyComponent bind-Value="@currentCount" />
-            // Output:  <MyComponent Value ="...<get the value>..." ValueChanged ="... <set the value>..." />
-            //
-            // This means that the expression that appears inside of 'bind' must be an LValue or else
-            // there will be errors. In general the errors that come from C# in this case are good enough
-            // to understand the problem.
-            //
-            // The BindMethods calls are required in this case because to give us a good experience. They
-            // use overloading to ensure that can get an Action<object> that will convert and set an arbitrary
-            // value.
-            //
-            // We also assume that the element will be treated as a component for now because
-            // multiple passes handle 'special' tag helpers. We have another pass that translates
-            // a tag helper node back into 'regular' element when it doesn't have an associated component
+            // The class usage is like how Bind-... works wherein it rewrites the tag helper into a ternary operator 
+            // that is appended to the class attribute.
+            // so this code
+            // <div class.highlight=@(5 > 1) class="class1"></div>
+            // would be rewritten as 
+            // <div class="class1 @(5 > 1 ? "highlight" : string.Empty)"></div>
 
             var original = GetAttributeContent(attributeNode);
             if (string.IsNullOrEmpty(original.Content))
@@ -93,12 +82,9 @@ namespace Microsoft.AspNetCore.Blazor.Razor
             }
 
 
-            // Now rewrite the content of the value node to look like:
-            //
-            // BindMethods.GetValue(<code>) OR
-            // BindMethods.GetValue(<code>, <format>)
-
+            // Now rewrite the content of the class node
             // Only get the segments after class. onwards
+            // a dot after class. is treated as a new class
             var classes = string.Join(" ", attributeNode.AttributeName.Substring(6).Split('.'));
 
             var expression = new CSharpExpressionIntermediateNode();

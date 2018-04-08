@@ -5,9 +5,9 @@ using System.Text;
 namespace Microsoft.AspNetCore.Blazor.Components
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = true)]
-    public sealed class ClassNameElementAttribute : Attribute
+    public sealed class ConditionalClassAttribute : Attribute
     {
-        public ClassNameElementAttribute()
+        public ConditionalClassAttribute()
         {
         }
     }

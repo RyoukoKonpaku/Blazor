@@ -10,9 +10,9 @@ using Microsoft.CodeAnalysis.Razor;
 
 namespace Microsoft.AspNetCore.Blazor.Razor
 {
-    internal class ClassNameTagHelperDescriptorProvider : ITagHelperDescriptorProvider
+    internal class ConditionalClassTagHelperDescriptorProvider : ITagHelperDescriptorProvider
     {
-        // Run after the component tag helper provider, because we need to see the results.
+        // I don't know if this is necessary here.
         public int Order { get; set; } = 1000;
 
         public RazorEngine Engine { get; set; }
@@ -29,23 +29,21 @@ namespace Microsoft.AspNetCore.Blazor.Razor
             {
                 return;
             }
-
-            // Tag Helper defintion for case #1. This is the most general case.
-            context.Results.Add(CreateClassNameTagHelper());
+            
+            context.Results.Add(ConditionalClassTagHelper());
         }
 
-        private TagHelperDescriptor CreateClassNameTagHelper()
+        private TagHelperDescriptor ConditionalClassTagHelper()
         {
-            var builder = TagHelperDescriptorBuilder.Create(BlazorMetadata.ClassName.TagHelperKind, "Class", BlazorApi.AssemblyName);
-            // TODO transfer to resources.
-            builder.Documentation = "TODO Nyahha";
+            var builder = TagHelperDescriptorBuilder.Create(BlazorMetadata.ConditionalClass.TagHelperKind, "Class", BlazorApi.AssemblyName);
+            builder.Documentation = Resources.ConditionalClassTagHelper_Documentation;
 
-            builder.Metadata.Add(BlazorMetadata.SpecialKindKey, BlazorMetadata.ClassName.TagHelperKind);
-            builder.Metadata[TagHelperMetadata.Runtime.Name] = BlazorMetadata.ClassName.RuntimeName;
+            builder.Metadata.Add(BlazorMetadata.SpecialKindKey, BlazorMetadata.ConditionalClass.TagHelperKind);
+            builder.Metadata[TagHelperMetadata.Runtime.Name] = BlazorMetadata.ConditionalClass.RuntimeName;
 
             // WTE has a bug in 15.7p1 where a Tag Helper without a display-name that looks like
             // a C# property will crash trying to create the toolips.
-            builder.SetTypeName("Microsoft.AspNetCore.Blazor.Components.ClassName");
+            builder.SetTypeName("Microsoft.AspNetCore.Blazor.Components.ConditionalClass");
 
             builder.TagMatchingRule(rule =>
             {

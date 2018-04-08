@@ -9,7 +9,7 @@ namespace Microsoft.AspNetCore.Blazor.Razor
 {
     internal static class TagHelperDescriptorExtensions
     {
-        public static bool IsClassNameTagHelper(this TagHelperDescriptor tagHelper)
+        public static bool IsConditionalClassTagHelper(this TagHelperDescriptor tagHelper)
         {
             if (tagHelper == null)
             {
@@ -18,7 +18,7 @@ namespace Microsoft.AspNetCore.Blazor.Razor
 
             return
                 tagHelper.Metadata.TryGetValue(BlazorMetadata.SpecialKindKey, out var kind) &&
-                string.Equals(BlazorMetadata.ClassName.TagHelperKind, kind);
+                string.Equals(BlazorMetadata.ConditionalClass.TagHelperKind, kind);
         }
 
         public static bool IsBindTagHelper(this TagHelperDescriptor tagHelper)

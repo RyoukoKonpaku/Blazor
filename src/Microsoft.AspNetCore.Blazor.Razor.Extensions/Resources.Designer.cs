@@ -106,6 +106,15 @@ namespace Microsoft.AspNetCore.Blazor.Razor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Applies the css class provided after &lt;code&gt;class.&lt;/code&gt; when the boolean expression returns true. Each class after the class. attribute is separated by a dot. Example usage: &lt;code&gt;class.active.disable=@Bool&lt;/code&gt; will apply the css classes active and disable when @Bool value is true..
+        /// </summary>
+        internal static string ConditionalClassTagHelper_Documentation {
+            get {
+                return ResourceManager.GetString("ConditionalClassTagHelper_Documentation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Sets the &apos;{0}&apos; attribute to the provided string or delegate value. A delegate value should be of type &apos;{1}&apos;..
         /// </summary>
         internal static string EventHandlerTagHelper_Documentation {

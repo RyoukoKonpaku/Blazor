@@ -26,7 +26,7 @@ namespace Microsoft.AspNetCore.Blazor.Razor
             public readonly static string ChangeAttribute = "Blazor.Bind.ChangeAttribute";
         }
 
-        public static class ClassName
+        public static class ConditionalClass
         {
             public static readonly string RuntimeName = "Blazor.None";
 

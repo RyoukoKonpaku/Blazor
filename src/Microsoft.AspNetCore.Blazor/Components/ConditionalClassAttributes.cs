@@ -4,8 +4,8 @@ using System.Text;
 
 namespace Microsoft.AspNetCore.Blazor.Components
 {
-    [ClassNameElement()]
-    public static class ClassNameAttributes
+    [ConditionalClass()]
+    public static class ConditionalClassAttributes
     {
     }
 }

@@ -68,7 +68,7 @@ namespace Microsoft.AspNetCore.Blazor.Razor
             // Blazor-specific passes, in order.
             builder.Features.Add(new ComponentDocumentClassifierPass());
             builder.Features.Add(new ComplexAttributeContentPass());
-            builder.Features.Add(new ClassNameLoweringPass());
+            builder.Features.Add(new ConditionalClassLoweringPass());
             builder.Features.Add(new BindLoweringPass());
             builder.Features.Add(new EventHandlerLoweringPass());
             builder.Features.Add(new ComponentLoweringPass());
@@ -77,7 +77,7 @@ namespace Microsoft.AspNetCore.Blazor.Razor
             builder.Features.Add(new ComponentTagHelperDescriptorProvider());
             builder.Features.Add(new BindTagHelperDescriptorProvider());
             builder.Features.Add(new EventHandlerTagHelperDescriptorProvider());
-            builder.Features.Add(new ClassNameTagHelperDescriptorProvider());
+            builder.Features.Add(new ConditionalClassTagHelperDescriptorProvider());
 
             if (builder.Configuration.ConfigurationName == DeclarationConfiguration.ConfigurationName)
             {

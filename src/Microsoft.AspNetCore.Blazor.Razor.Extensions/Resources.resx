@@ -132,6 +132,9 @@
   <data name="BindTagHelper_Fallback_Format_Documentation" xml:space="preserve">
     <value>Specifies a format to convert the value specified by the corresponding bind attribute. For example: &lt;code&gt;format-value="..."&lt;/code&gt; will apply a format string to the value specified in &lt;code&gt;bind-value-...&lt;/code&gt;. The format string can currently only be used with expressions of type &lt;code&gt;DateTime&lt;/code&gt;.</value>
   </data>
+  <data name="ConditionalClassTagHelper_Documentation" xml:space="preserve">
+    <value>Applies the css class provided after &lt;code&gt;class.&lt;/code&gt; when the boolean expression returns true. Each class after the class. attribute is separated by a dot. Example usage: &lt;code&gt;class.active.disable=@Bool&lt;/code&gt; will apply the css classes active and disable when @Bool value is true.</value>
+  </data>
   <data name="EventHandlerTagHelper_Documentation" xml:space="preserve">
     <value>Sets the '{0}' attribute to the provided string or delegate value. A delegate value should be of type '{1}'.</value>
   </data>
