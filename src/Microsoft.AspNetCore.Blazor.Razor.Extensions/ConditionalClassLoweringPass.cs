@@ -30,7 +30,7 @@ namespace Microsoft.AspNetCore.Blazor.Razor
 
                 // Determine if the element has a class attribute already.
                 int? classIndex = null;
-                var updateClassIndex = false;
+                var updateClassIndex = true;
                 for (var j = node.Children.Count - 1; j >= 0; j--)
                 {
                     if (updateClassIndex)
