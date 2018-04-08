@@ -26,6 +26,13 @@ namespace Microsoft.AspNetCore.Blazor.Razor
             public readonly static string ChangeAttribute = "Blazor.Bind.ChangeAttribute";
         }
 
+        public static class ClassName
+        {
+            public static readonly string RuntimeName = "Blazor.None";
+
+            public static readonly string TagHelperKind = "Blazor.Class.0.1";
+        }
+
         public static class Component
         {
             public static readonly string DelegateSignatureKey = "Blazor.DelegateSignature";

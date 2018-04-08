@@ -9,6 +9,18 @@ namespace Microsoft.AspNetCore.Blazor.Razor
 {
     internal static class TagHelperDescriptorExtensions
     {
+        public static bool IsClassNameTagHelper(this TagHelperDescriptor tagHelper)
+        {
+            if (tagHelper == null)
+            {
+                throw new ArgumentException(nameof(tagHelper));
+            }
+
+            return
+                tagHelper.Metadata.TryGetValue(BlazorMetadata.SpecialKindKey, out var kind) &&
+                string.Equals(BlazorMetadata.ClassName.TagHelperKind, kind);
+        }
+
         public static bool IsBindTagHelper(this TagHelperDescriptor tagHelper)
         {
             if (tagHelper == null)
